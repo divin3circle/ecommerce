@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import { CustomError } from "../middleware/error";
 
 const router = express.Router();
 
@@ -14,6 +15,11 @@ router.put(
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
         req.body.password = hashedPassword;
       }
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        throw new CustomError(404, "User not found");
+        return;
+      }
       const updatedUser = await User.findByIdAndUpdate(
         req.params.userId,
         {
@@ -21,6 +27,18 @@ router.put(
         },
         { new: true }
       );
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//GET DETAILS
+router.get(
+  "/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
     } catch (error) {
       next(error);
     }
