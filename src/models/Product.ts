@@ -8,7 +8,7 @@ const productSchema = new Schema({
   bannerImage: { type: String, required: true },
   images: [{ type: String, required: true }],
   rating: { type: Number, required: true },
-  catergory: [{ type: String, required: true }],
+  category: [{ type: String, required: true }],
   color: [{ type: String, required: false }],
   size: [{ type: String, required: false }],
 });

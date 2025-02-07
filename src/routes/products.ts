@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import Product from "../models/Product";
+import { CustomError } from "../middleware/error";
 
 const router = express.Router();
 
@@ -36,6 +37,54 @@ router.get(
         return;
       }
       res.status(200).json(productsFound);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//GET ALL PRODUCTS
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//GET PRODUCTS BY CATEGORY
+router.get(
+  "/:category",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { category } = req.params;
+    try {
+      const products = await Product.find({ category });
+      if (products.length === 0) {
+        res.status(404).json({ message: "No product was found!" });
+        throw new CustomError(404, "No product was found!");
+        return;
+      }
+      res.status(200).json(products);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//GET PRODUCT DETAILS
+router.get(
+  "/get/:productId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+    try {
+      const products = await Product.findById(productId);
+      if (!products) {
+        res.status(404).json({ message: "No product was found!" });
+        throw new CustomError(404, "No product was found!");
+        return;
+      }
+      res.status(200).json(products);
     } catch (error) {
       next(error);
     }

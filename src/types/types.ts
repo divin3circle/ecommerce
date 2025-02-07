@@ -13,7 +13,7 @@ export type ProductType = {
   bannerImage: string;
   images: string[];
   rating: number;
-  catergory: string[];
+  category: string[];
   color: string[];
   size: string[];
 };
