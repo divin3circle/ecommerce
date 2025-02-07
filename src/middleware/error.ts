@@ -1,5 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
+class CustomError extends Error {
+  constructor(public statusCode: number, public message: string) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
 const errorHandler = (
   err: Error,
   req: Request,
@@ -7,17 +14,10 @@ const errorHandler = (
   next: NextFunction
 ) => {
   if (err instanceof CustomError) {
-    return res.status(err.stausCode).json({ message: err.message });
+    return res.status(err.statusCode).json({ message: err.message });
   }
 
   return res.status(500).json({ message: err.message });
 };
-
-class CustomError extends Error {
-  constructor(public stausCode: number, public message: string) {
-    super(message);
-    this.stausCode = stausCode;
-  }
-}
 
 export { errorHandler, CustomError };
