@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import { CustomError } from "../middleware/error";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -53,14 +53,46 @@ router.post(
         process.env.JWT_SECRET as string,
         { expiresIn: "3d" }
       );
+      res.cookie("token", token).status(200).json({
+        token: token,
+        userID: user._id,
+        message: "Log in successfull!",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//LOGOUT
+router.get(
+  "/logout",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
       res
-        .cookie("token", token)
+        .clearCookie("token")
         .status(200)
-        .json({
-          token: token,
-          userID: user._id,
-          message: "Log in successfull!",
-        });
+        .json({ message: "Logged out successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//FETCH CURRENT USER
+router.get(
+  "/refetch",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies.token;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      const id = (decoded as JwtPayload).id;
+      const user = await User.findById(id);
+      if (!user) {
+        throw new CustomError(404, "User not found!");
+        return;
+      }
+      res.status(200).json({ user });
     } catch (error) {
       next(error);
     }
