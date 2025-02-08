@@ -21,3 +21,5 @@ const orderSchema = new Schema({
 });
 
 const Order = mongoose.model<OrderType>("Order", orderSchema);
+
+export default Order;

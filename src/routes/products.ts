@@ -4,7 +4,7 @@ import { CustomError } from "../middleware/error";
 
 const router = express.Router();
 
-//CREATE PRODUCT(ONLY FOR ADMIN)
+//CREATE PRODUCT(ONLY FOR ADMIN/SELLER)
 router.post(
   "/create",
   async (req: Request, res: Response, next: NextFunction) => {
