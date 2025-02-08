@@ -40,4 +40,40 @@ router.put(
   }
 );
 
+//CANCEL ORDER
+router.delete(
+  "/delete/:orderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { orderId } = req.params;
+    try {
+      const deletedOrder = await Order.findByIdAndDelete(orderId);
+      if (!deletedOrder) {
+        res.status(404).json({ message: "Order not found" });
+        throw new CustomError(404, "Order not found");
+      }
+      res.status(200).json({ message: "Order canceled successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//GET ALL ORDERS
+router.get(
+  "/all/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    try {
+      const userOrders = await Order.find({ user: userId });
+      if (userOrders.length === 0) {
+        res.status(404).json({ message: "No orders found" });
+        throw new CustomError(404, "No orders found");
+      }
+      res.status(200).json(userOrders);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;
