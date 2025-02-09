@@ -64,7 +64,7 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
     try {
-      const userOrders = await Order.find({ user: userId });
+      const userOrders = await Order.find({ user: userId }).populate("address");
       if (userOrders.length === 0) {
         res.status(404).json({ message: "No orders found" });
         throw new CustomError(404, "No orders found");
