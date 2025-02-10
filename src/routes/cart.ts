@@ -132,4 +132,24 @@ router.post(
   }
 );
 
+// GET CART
+router.get(
+  "/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    try {
+      const userCart = await Cart.findOne({ user: userId }).populate(
+        "products.product"
+      );
+      if (!userCart) {
+        res.status(404).json({ message: "Cart not found" });
+        throw new CustomError(404, "Cart not found");
+      }
+      res.status(200).json({ cart: userCart });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;
