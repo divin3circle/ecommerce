@@ -7,6 +7,7 @@ import productRoute from "./routes/products";
 import addressRoute from "./routes/addresses";
 import orderRoute from "./routes/orders";
 import cartRoute from "./routes/cart";
+import wishlistRoute from "./routes/wishlist";
 import cookieParser from "cookie-parser";
 import verifyToken from "./middleware/verifyToken";
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/product", productRoute);
 app.use("/api/address", verifyToken, addressRoute);
 app.use("/api/order", verifyToken, orderRoute);
 app.use("/api/cart", verifyToken, cartRoute);
+app.use("/api/wishlist", verifyToken, wishlistRoute);
 
 // app.use(errorHandler);
 
