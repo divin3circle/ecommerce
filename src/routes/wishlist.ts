@@ -79,4 +79,26 @@ router.post(
   }
 );
 
+// CLEAR WISHLIST
+router.post(
+  "/clear",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.body;
+    try {
+      const userWishlist = await Wishlist.findOne({ user: userId });
+      if (!userWishlist) {
+        res.status(404).json({ message: "Wishlist not found" });
+        throw new CustomError(404, "Wishlist not found");
+      }
+      userWishlist.products = [];
+      const savedWishlist = await userWishlist.save();
+      res
+        .status(200)
+        .json({ message: "Wishlist cleared", wishlist: savedWishlist });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;
