@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import Cart from "../models/Cart";
 import Product from "../models/Product";
+import { CustomError } from "../middleware/error";
 
 const router = express.Router();
 
@@ -94,6 +95,37 @@ router.post(
       res
         .status(200)
         .json({ message: "Product removed from cart", cart: savedCart });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//DECRESING QUANTITY OF PRODUCT IN CART
+router.post(
+  "/delete-item",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId, productId } = req.body;
+    try {
+      const cart = await Cart.findOne({ user: userId });
+      if (!cart) {
+        res.status(404).json({ message: "Cart not found" });
+        throw new CustomError(404, "Cart not found");
+      }
+      const productIndex = cart.products.findIndex(
+        (item) => item.product.toString() === productId
+      );
+      if (productIndex !== -1) {
+        if (cart.products[productIndex].quantity > 1) {
+          cart.products[productIndex].quantity -= 1;
+        } else {
+          cart.products.splice(productIndex, 1);
+        }
+      }
+      const savedCart = await cart.save();
+      res
+        .status(200)
+        .json({ message: "Product quantity decreased", cart: savedCart });
     } catch (error) {
       next(error);
     }
