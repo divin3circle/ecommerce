@@ -17,6 +17,10 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+  res.send("Ecommerce API");
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/user", verifyToken, userRoute);
 app.use("/api/product", productRoute);
